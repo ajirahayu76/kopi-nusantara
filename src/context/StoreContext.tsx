@@ -59,6 +59,8 @@ interface StoreContextType {
   deleteStaffUser: (id: string) => void;
   updateStoreSettings: (updates: Partial<StoreSettings>) => void;
   resetToDefaultData: () => void;
+  theme: 'light' | 'dark';
+  toggleTheme: () => void;
 }
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
@@ -70,10 +72,37 @@ const STORAGE_KEYS = {
   STAFF: 'salamkopi_staff_users_v2',
   SETTINGS: 'salamkopi_settings_v2',
   CURRENT_STAFF: 'salamkopi_current_staff_id_v2',
+  THEME: 'salamkopi_theme',
 };
 
 export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [activeView, setActiveView] = useState<AppActiveView>('customer-menu');
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.THEME);
+      if (saved === 'dark' || saved === 'light') return saved;
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    } catch {
+      return 'light';
+    }
+  });
+
+  useEffect(() => {
+    try {
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+      localStorage.setItem(STORAGE_KEYS.THEME, theme);
+    } catch {
+      // ignore
+    }
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+  };
 
   // Load warehouse
   const [warehouseItems, setWarehouseItems] = useState<WarehouseItem[]>(() => {
@@ -467,6 +496,8 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         deleteStaffUser,
         updateStoreSettings,
         resetToDefaultData,
+        theme,
+        toggleTheme,
       }}
     >
       {children}

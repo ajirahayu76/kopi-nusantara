@@ -15,6 +15,8 @@ import {
   ChevronDown,
   Store,
   Download,
+  Sun,
+  Moon,
 } from 'lucide-react';
 import { GithubIcon } from './icons/GithubIcon';
 import { OrderType, AppActiveView } from '../types';
@@ -39,7 +41,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   tableNumber,
   onOpenGitHubModal,
 }) => {
-  const { activeView, setActiveView, lowStockItems, currentStaffUser } = useStore();
+  const { activeView, setActiveView, lowStockItems, currentStaffUser, theme, toggleTheme } = useStore();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [systemDropdownOpen, setSystemDropdownOpen] = useState(false);
@@ -179,6 +181,27 @@ export const Navbar: React.FC<NavbarProps> = ({
               <span className="text-[10px] text-[#78716C]">({currentStaffUser.role})</span>
             </button>
 
+            {/* Theme Toggle Button (Dark / Light) */}
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="p-2 sm:px-2.5 sm:py-2 rounded-xl bg-[#EFE8DD] dark:bg-[#2A1910] hover:bg-[#E7DFD5] dark:hover:bg-[#382216] text-[#44403C] dark:text-[#FAF7F2] border border-[#D7C4B7] dark:border-[#382216] transition-all shadow-xs active:scale-95 cursor-pointer flex items-center gap-1.5"
+              title={theme === 'dark' ? 'Beralih ke Mode Terang (Siang)' : 'Beralih ke Mode Gelap (Malam)'}
+              aria-label="Ganti Mode Gelap/Terang"
+            >
+              {theme === 'dark' ? (
+                <>
+                  <Sun className="w-4 h-4 text-amber-400" />
+                  <span className="hidden xl:inline text-xs font-bold text-[#FAF7F2]">Terang</span>
+                </>
+              ) : (
+                <>
+                  <Moon className="w-4 h-4 text-[#78716C]" />
+                  <span className="hidden xl:inline text-xs font-bold text-[#44403C]">Gelap</span>
+                </>
+              )}
+            </button>
+
             {/* Export / Download GitHub button */}
             <button
               type="button"
@@ -235,6 +258,31 @@ export const Navbar: React.FC<NavbarProps> = ({
         {mobileMenuOpen && (
           <div className="lg:hidden mt-3 pt-3 border-t border-[#E7DFD5] pb-2 space-y-2">
             
+            {/* Mobile Theme Toggle */}
+            <div className="flex items-center justify-between p-2.5 rounded-xl bg-[#EFE8DD] dark:bg-[#2A1910] border border-[#D7C4B7] dark:border-[#382216]">
+              <div className="flex items-center gap-2 text-xs font-semibold text-[#44403C] dark:text-[#EFE8DD]">
+                {theme === 'dark' ? <Moon className="w-4 h-4 text-[#FDE68A]" /> : <Sun className="w-4 h-4 text-amber-600" />}
+                <span>Mode: {theme === 'dark' ? 'Gelap (Malam)' : 'Terang (Siang)'}</span>
+              </div>
+              <button
+                type="button"
+                onClick={toggleTheme}
+                className="px-3 py-1.5 rounded-lg bg-[#451A03] dark:bg-[#3D2418] text-[#FAF7F2] text-xs font-bold flex items-center gap-1.5 shadow-xs cursor-pointer"
+              >
+                {theme === 'dark' ? (
+                  <>
+                    <Sun className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Ganti Terang</span>
+                  </>
+                ) : (
+                  <>
+                    <Moon className="w-3.5 h-3.5 text-[#FDE68A]" />
+                    <span>Ganti Gelap</span>
+                  </>
+                )}
+              </button>
+            </div>
+
             <button
               type="button"
               onClick={() => {

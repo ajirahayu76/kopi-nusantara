@@ -228,7 +228,7 @@ const AppContent: React.FC = () => {
   const totalCartAmount = cartItems.reduce((acc, item) => acc + item.totalPrice, 0);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF7F2] text-[#292524] selection:bg-[#E2703A]/20 selection:text-[#9A3412]">
+    <div className="min-h-screen flex flex-col bg-[#FAF7F2] dark:bg-[#120A06] text-[#292524] dark:text-[#FAF7F2] transition-colors duration-300 selection:bg-[#E2703A]/20 selection:text-[#9A3412]">
       {/* Top cafe promo bar */}
       <PromoTicker />
 

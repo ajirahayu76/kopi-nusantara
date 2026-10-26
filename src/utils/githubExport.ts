@@ -131,8 +131,14 @@ export function generateStandaloneHTML(): string {
       </nav>
 
       <!-- Right Header Actions -->
-      <div class="flex items-center gap-2.5">
+      <div class="flex items-center gap-2">
         
+        <!-- Dark / Light Mode Toggle -->
+        <button onclick="toggleTheme()" id="theme-toggle-btn" class="p-2 sm:px-2.5 sm:py-2 rounded-xl bg-[#EFE8DD] text-[#44403C] border border-[#D7C4B7] transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs" title="Ganti Mode Gelap / Terang">
+          <i data-lucide="moon" class="w-4 h-4 text-[#78716C]"></i>
+          <span class="hidden xl:inline text-xs font-bold text-[#57534E]">Gelap</span>
+        </button>
+
         <!-- Cart Drawer Trigger -->
         <button onclick="toggleCartDrawer(true)" class="relative flex items-center gap-2 bg-[#451A03] hover:bg-[#290E02] text-white px-3.5 py-2 rounded-xl transition-all shadow-xs cursor-pointer">
           <i data-lucide="shopping-bag" class="w-4 h-4 text-[#FDE68A]"></i>
@@ -153,7 +159,14 @@ export function generateStandaloneHTML(): string {
     </div>
 
     <!-- Mobile Submenu -->
-    <div id="mobile-nav" class="hidden lg:hidden border-t border-[#E7DFD5] px-4 py-3 bg-[#FAF7F2] space-y-1">
+    <div id="mobile-nav" class="hidden lg:hidden border-t border-[#E7DFD5] px-4 py-3 bg-[#FAF7F2] space-y-1.5">
+      <div class="flex items-center justify-between p-2 rounded-xl bg-[#EFE8DD]">
+        <span class="text-xs font-semibold text-[#57534E]">Mode Tampilan</span>
+        <button onclick="toggleTheme()" class="px-2.5 py-1 rounded-lg bg-[#451A03] text-white text-xs font-bold flex items-center gap-1">
+          <i data-lucide="moon" class="w-3.5 h-3.5 text-[#FDE68A]"></i>
+          <span>Ganti Mode</span>
+        </button>
+      </div>
       <button onclick="switchView('customer-menu'); toggleMobileNav();" class="w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 bg-[#451A03] text-white">
         <i data-lucide="store" class="w-4 h-4"></i> Menu Kopi
       </button>
@@ -926,6 +939,53 @@ body {
   animation: fadeIn 0.25s ease-out;
 }
 
+/* Dark Theme Overrides */
+html.dark body {
+  background-color: #120A06 !important;
+  color: #FAF7F2 !important;
+}
+html.dark #main-header,
+html.dark footer {
+  background-color: #160D08 !important;
+  border-color: #382216 !important;
+}
+html.dark .bg-white {
+  background-color: #1F130B !important;
+}
+html.dark .bg-\[\#FAF7F2\] {
+  background-color: #160D08 !important;
+}
+html.dark .bg-\[\#EFE8DD\] {
+  background-color: #2A1910 !important;
+}
+html.dark .border-\[\#E7DFD5\],
+html.dark .border-\[\#D7C4B7\] {
+  border-color: #382216 !important;
+}
+html.dark .text-\[\#292524\] {
+  color: #FAF7F2 !important;
+}
+html.dark .text-\[\#44403C\] {
+  color: #EFE8DD !important;
+}
+html.dark .text-\[\#57534E\],
+html.dark .text-\[\#78716C\] {
+  color: #B8A99A !important;
+}
+html.dark input,
+html.dark select,
+html.dark textarea {
+  background-color: #1F130B !important;
+  color: #FAF7F2 !important;
+  border-color: #382216 !important;
+}
+html.dark ::-webkit-scrollbar-track {
+  background: #160D08;
+}
+html.dark ::-webkit-scrollbar-thumb {
+  background: #382216;
+}
+
 /* Thermal printer receipt styling */
 @media print {
   body * {
@@ -994,8 +1054,40 @@ let transactionsLog = [
   { id: 'TRX-9478', time: '13:28', customer: 'Nadya A.', type: 'Delivery', total: 88000, method: 'QRIS' }
 ];
 
+let currentTheme = localStorage.getItem('salamkopi_theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+
+function applyTheme(t) {
+  currentTheme = t;
+  if (t === 'dark') {
+    document.documentElement.classList.add('dark');
+  } else {
+    document.documentElement.classList.remove('dark');
+  }
+  try {
+    localStorage.setItem('salamkopi_theme', t);
+  } catch (e) {}
+  updateThemeUI();
+}
+
+function toggleTheme() {
+  applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+}
+
+function updateThemeUI() {
+  const btn = document.getElementById('theme-toggle-btn');
+  if (btn) {
+    btn.innerHTML = currentTheme === 'dark'
+      ? '<i data-lucide="sun" class="w-4 h-4 text-amber-400"></i><span class="hidden xl:inline text-xs font-bold text-amber-200">Terang</span>'
+      : '<i data-lucide="moon" class="w-4 h-4 text-[#78716C]"></i><span class="hidden xl:inline text-xs font-bold text-[#57534E]">Gelap</span>';
+  }
+  if (window.lucide) {
+    window.lucide.createIcons();
+  }
+}
+
 // INITIALIZATION
 document.addEventListener('DOMContentLoaded', () => {
+  applyTheme(currentTheme);
   renderMenu();
   renderOrigins();
   renderBrewGuide();
@@ -1768,6 +1860,7 @@ salam-kopi/
 
 ## ✨ Fitur-Fitur Website
 
+- **Mode Gelap & Terang (Dark / Light Mode)**: Dukungan tema visual gelap (nuansa malam kedai kopi yang elegan) dan terang (siang hari yang hangat), dengan deteksi sistem otomatis dan penyimpanan status di browser.
 - **Katalog Menu Lengkap**: 20+ varian kopi klasik, signature kopi susu aren, manual brew, non-kopi, camilan & biji kopi.
 - **Pencarian & Filter Kategori**: Filter instan dan search bar responsif.
 - **Kustomisasi Minuman**: Pilihan ukuran cup (Reguler/Large), suhu (Dingin/Panas), gula (Normal/Sedikit/Tanpa Gula), dan susu nabati (Oat/Almond).
